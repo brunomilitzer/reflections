@@ -1,4 +1,4 @@
-package section2.lessons;
+package section2.lesson1;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
