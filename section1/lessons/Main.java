@@ -1,4 +1,4 @@
-package lecture2;
+package section1.lessons;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class Main {
 
         Class<?> hashMapClass = mapObject.getClass();
 
-        Class<?> squareClass = Class.forName("lecture2.Main$Square");
+        Class<?> squareClass = Class.forName("section1.lessons.Main$Square");
 
         //printClassInfo(stringClass);
         //printClassInfo(hashMapClass);

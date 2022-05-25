@@ -2,7 +2,7 @@
 
 **_Lectures_**
 
-1. [Lecture 2](https://github.com/brunomilitzer/)
+1. [Section 1](https://github.com/brunomilitzer/reflections/blob/master/section1/)
 
 **Specifications**
 
