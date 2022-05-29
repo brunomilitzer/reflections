@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 
 public class ArrayReader {
 
-
     public Object getArrayElement(Object array, int index) {
         int arrayLength = Array.getLength(array);
 
