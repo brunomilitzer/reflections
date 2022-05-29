@@ -4,6 +4,7 @@ import section4.data.GameConfig;
 import section4.data.UserInterfaceConfig;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +38,13 @@ public class Main {
 
         while (scanner.hasNextLine()) {
             String configLine = scanner.nextLine();
+
             String[] nameValuePair = configLine.split("=");
+
+            if (nameValuePair.length != 2) {
+                continue;
+            }
+
             String propertyName = nameValuePair[0];
             String propertyValue = nameValuePair[1];
 
@@ -51,11 +58,30 @@ public class Main {
 
             field.setAccessible(true);
 
-            Object parseValue = parseValue(field.getType(), propertyValue);
+            Object parseValue;
+
+            if (field.getType().isArray()) {
+                parseValue = parseArray(field.getType().getComponentType(), propertyValue);
+            } else {
+                parseValue = parseValue(field.getType(), propertyValue);
+            }
+
             field.set(configInstance, parseValue);
         }
 
         return configInstance;
+    }
+
+    private static Object parseArray(Class<?> arrayElementType, String value) {
+        String[] elementValues = value.split(",");
+
+        Object arrayObject = Array.newInstance(arrayElementType, elementValues.length);
+
+        for (int i = 0; i < elementValues.length; i++) {
+            Array.set(arrayObject, i, parseValue(arrayElementType, elementValues[i]));
+        }
+
+        return arrayObject;
     }
 
     private static Object parseValue(Class<?> type, String value) {

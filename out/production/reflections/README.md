@@ -3,6 +3,9 @@
 **_Lectures_**
 
 1. [Section 1](https://github.com/brunomilitzer/reflections/blob/master/section1/)
+2. [Section 2](https://github.com/brunomilitzer/reflections/blob/master/section2/)
+3. [Section 3](https://github.com/brunomilitzer/reflections/blob/master/section3/)
+4. [Section 4](https://github.com/brunomilitzer/reflections/blob/master/section4/)
 
 **Specifications**
 
