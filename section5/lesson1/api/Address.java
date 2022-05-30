@@ -1,4 +1,4 @@
-package section5.api;
+package section5.lesson1.api;
 public class Address {
     private String city;
     private String state;

@@ -1,6 +1,6 @@
-package section5.test;
+package section5.lesson1.test;
 
-import section5.api.ClothingProduct;
+import section5.lesson1.api.ClothingProduct;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

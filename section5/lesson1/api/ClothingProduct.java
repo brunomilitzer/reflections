@@ -1,4 +1,4 @@
-package section5.api;
+package section5.lesson1.api;
 
 public class ClothingProduct extends Product {
     private Size size;
