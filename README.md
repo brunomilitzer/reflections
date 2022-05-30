@@ -7,6 +7,7 @@
 3. [Section 3](https://github.com/brunomilitzer/reflections/blob/master/section3/)
 4. [Section 4](https://github.com/brunomilitzer/reflections/blob/master/section4/)
 5. [Section 5](https://github.com/brunomilitzer/reflections/blob/master/section5/)
+6. [Section 6](https://github.com/brunomilitzer/reflections/blob/master/section6/)
 
 **Specifications**
 
