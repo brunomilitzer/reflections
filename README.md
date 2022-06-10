@@ -9,6 +9,7 @@
 5. [Methods Discovery & Invocation](https://github.com/brunomilitzer/reflections/blob/master/section5/)
 6. [Java Modifiers Discovery and Analysis](https://github.com/brunomilitzer/reflections/blob/master/section6/)
 7. [Annotations with Java Reflections](https://github.com/brunomilitzer/reflections/blob/master/section6/)
+8. [Parameters Annotations](https://github.com/brunomilitzer/reflections/blob/master/graphexample/)
 
 **Specifications**
 
