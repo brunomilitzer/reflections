@@ -1,9 +1,8 @@
-package section7;
+package repetableannotations;
 
-import section7.annotations.InitializerClass;
-import section7.annotations.InitializerMethod;
-import section7.annotations.RetryOperation;
-import section7.annotations.ScanPackages;
+import repetableannotations.annotations.Annotations.ExecuteOnSchedule;
+import repetableannotations.annotations.Annotations.ScanPackages;
+import repetableannotations.annotations.Annotations.ScheduledExecutorClass;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,79 +14,79 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-@ScanPackages(values = { "app", "app.configs", "app.databases", "app.http" })
+@ScanPackages(values = { "loaders" })
 public class Main {
 
     public static void main( String[] args ) throws Throwable {
-        initialize();
+        schedule();
     }
 
-    public static void initialize()
-            throws Throwable {
-
+    private static void schedule() throws URISyntaxException, IOException, ClassNotFoundException {
         ScanPackages scanPackages = Main.class.getAnnotation( ScanPackages.class );
-
         if ( scanPackages == null || scanPackages.values().length == 0 ) {
             return;
         }
 
-        List<Class<?>> classes = getAllClasses( scanPackages.values() );
+        List<Class<?>> allClasses = getAllClasses( scanPackages.values() );
+        List<Method> scheduleExecutorMethods = getScheduleExecutorMethods( allClasses );
 
-        for ( Class<?> clazz : classes ) {
-            if ( !clazz.isAnnotationPresent( InitializerClass.class ) ) {
+        for ( Method method : scheduleExecutorMethods ) {
+            scheduleMethodExecution( method );
+        }
+    }
+
+    private static void scheduleMethodExecution( Method method ) {
+        ExecuteOnSchedule[] schedules = method.getAnnotationsByType( ExecuteOnSchedule.class );
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        for (ExecuteOnSchedule schedule : schedules) {
+            scheduledExecutorService.scheduleAtFixedRate( () -> runWhenScheduled(method),
+                    schedule.delaySeconds(),
+                    schedule.periodSeconds(),
+                    TimeUnit.SECONDS
+            );
+        }
+    }
+
+    private static void runWhenScheduled( Method method ) {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+        System.out.println(String.format( "Executing at %s", dateFormat.format( currentDate ) ));
+
+        try {
+            method.invoke( null );
+        } catch ( InvocationTargetException | IllegalAccessException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<Method> getScheduleExecutorMethods( List<Class<?>> allClasses ) {
+        List<Method> scheduledMethods = new ArrayList<>();
+
+        for ( Class<?> clazz : allClasses ) {
+            if ( !clazz.isAnnotationPresent( ScheduledExecutorClass.class ) ) {
                 continue;
             }
 
-            List<Method> methods = getAllInitializingMethods( clazz );
-
-            Object instance = clazz.getDeclaredConstructor().newInstance();
-
-            for ( Method method : methods ) {
-                callInitializingMethod( instance, method );
-            }
-        }
-    }
-
-    private static void callInitializingMethod( Object instance, Method method ) throws Throwable {
-        RetryOperation retryOperation = method.getAnnotation( RetryOperation.class );
-
-        int numberOfRetries = retryOperation == null ? 0 : retryOperation.numberOfRetries();
-        while ( true ) {
-            try {
-                method.invoke( instance );
-                break;
-            } catch ( InvocationTargetException e ) {
-                Throwable targetException = e.getTargetException();
-
-                if ( numberOfRetries > 0 && Set.of( retryOperation.retryException() )
-                        .contains( targetException.getClass() ) ) {
-                    numberOfRetries--;
-
-                    System.out.println( "Retrying ..." );
-                    Thread.sleep( retryOperation.durationBetweenRetriesMs() );
-                } else if ( retryOperation != null ) {
-                    throw new Exception( retryOperation.failureMessage(), targetException );
-                } else {
-                    throw targetException;
+            for ( Method method : clazz.getDeclaredMethods() ) {
+                if ( method.getAnnotationsByType( ExecuteOnSchedule.class ).length != 0 ) {
+                    scheduledMethods.add( method );
                 }
             }
         }
-    }
 
-    private static List<Method> getAllInitializingMethods( Class<?> clazz ) {
-        List<Method> initializingMethods = new ArrayList<>();
-
-        for ( Method method : clazz.getMethods() ) {
-            if ( method.isAnnotationPresent( InitializerMethod.class ) ) {
-                initializingMethods.add( method );
-            }
-        }
-        return initializingMethods;
+        return scheduledMethods;
     }
 
     private static List<Class<?>> getAllClasses( String... packageNames )
@@ -96,6 +95,7 @@ public class Main {
 
         for ( String packageName : packageNames ) {
             String packageRelativePath = packageName.replace( ".", "\\" );
+            System.out.println(packageRelativePath);
 
             URI packageUri = Main.class.getResource( packageRelativePath ).toURI();
 
@@ -143,9 +143,10 @@ public class Main {
         return classes;
     }
 
-    private static String getBasePath(Class<?> clazz) {
+    private static String getBasePath( Class<?> clazz ) {
         String canonicalName = clazz.getCanonicalName();
         String[] canonicalNameArray = canonicalName.split( "\\." );
-        return canonicalNameArray[0];
+        return canonicalNameArray[ 0 ];
     }
+
 }
