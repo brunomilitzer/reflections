@@ -10,6 +10,7 @@
 6. [Java Modifiers Discovery and Analysis](https://github.com/brunomilitzer/reflections/blob/master/section6/)
 7. [Annotations with Java Reflections](https://github.com/brunomilitzer/reflections/blob/master/section6/)
 8. [Parameters Annotations](https://github.com/brunomilitzer/reflections/blob/master/graphexample/)
+9. [Dynamic Proxies](https://github.com/brunomilitzer/reflections/blob/master/proxy/)
 
 **Specifications**
 
